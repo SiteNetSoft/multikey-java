@@ -40,7 +40,7 @@ public final class Signatures {
                 case ES256K -> {
                     BigInteger d = ((ECPrivateKey) key).getS();
                     byte[] digest = sha256(data);
-                    BigInteger[] rs = Bc.secp256k1(() -> Secp256k1.sign(d, digest));
+                    BigInteger[] rs = Bc.secp256k1(ops -> ops.sign(d, digest));
                     return normaliseLowS(KeyType.SECP256K1, compact(rs[0], rs[1]));
                 }
                 case EDDSA -> {
@@ -95,7 +95,7 @@ public final class Signatures {
                     BigInteger x = ec.getW().getAffineX();
                     BigInteger y = ec.getW().getAffineY();
                     byte[] digest = sha256(data);
-                    return Bc.secp256k1(() -> Secp256k1.verify(x, y, digest, r, s));
+                    return Bc.secp256k1(ops -> ops.verify(x, y, digest, r, s));
                 }
                 case EDDSA -> {
                     return jdkVerify("Ed25519", key, data, sig);

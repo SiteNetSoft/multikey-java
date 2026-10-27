@@ -103,7 +103,7 @@ public final class Jwk {
                     throw new MultikeyException("JWK member 'd' out of range");
                 }
                 if (curve == KeyType.SECP256K1) {
-                    return Bc.secp256k1(() -> Secp256k1.privateKey(d));
+                    return Bc.secp256k1(ops -> ops.privateKey(d));
                 }
                 return build("EC", () -> {
                     AlgorithmParameters ap = AlgorithmParameters.getInstance("EC");

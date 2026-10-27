@@ -27,7 +27,7 @@ public final class KeyPairs {
                     return g.generateKeyPair();
                 }
                 case SECP256K1 -> {
-                    return Bc.secp256k1(() -> Secp256k1.generate());
+                    return Bc.secp256k1(ops -> ops.generate());
                 }
                 default -> throw new MultikeyException("Unsupported key type " + type);
             }

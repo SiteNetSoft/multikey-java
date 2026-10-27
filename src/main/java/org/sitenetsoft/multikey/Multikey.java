@@ -114,12 +114,7 @@ public record Multikey(KeyType type, byte[] publicKeyBytes) {
                 }
                 case SECP256K1 -> {
                     BigInteger[] xy = EcPoints.decompress(type, publicKeyBytes);
-                    try {
-                        return Secp256k1.publicKey(xy[0], xy[1]);
-                    } catch (NoClassDefFoundError e) {
-                        throw new MultikeyException(
-                                "secp256k1 needs org.bouncycastle:bcprov-jdk18on on the classpath", e);
-                    }
+                    return Bc.secp256k1(ops -> ops.publicKey(xy[0], xy[1]));
                 }
                 case ED25519 -> {
                     byte[] spki = new byte[ED25519_SPKI_PREFIX.length + 32];

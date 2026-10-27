@@ -75,7 +75,7 @@ public final class Pem {
                 case P256 -> KeyFactory.getInstance("EC").generatePublic(new X509EncodedKeySpec(der));
                 case ED25519 -> KeyFactory.getInstance("Ed25519").generatePublic(new X509EncodedKeySpec(der));
                 case RSA -> KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(der));
-                case SECP256K1 -> Bc.secp256k1(() -> Secp256k1.publicKeyFromSpki(der));
+                case SECP256K1 -> Bc.secp256k1(ops -> ops.publicKeyFromSpki(der));
             };
         } catch (MultikeyException e) {
             throw e;
@@ -91,7 +91,7 @@ public final class Pem {
                 case P256 -> KeyFactory.getInstance("EC").generatePrivate(new PKCS8EncodedKeySpec(der));
                 case ED25519 -> KeyFactory.getInstance("Ed25519").generatePrivate(new PKCS8EncodedKeySpec(der));
                 case RSA -> KeyFactory.getInstance("RSA").generatePrivate(new PKCS8EncodedKeySpec(der));
-                case SECP256K1 -> Bc.secp256k1(() -> Secp256k1.privateKeyFromPkcs8(der));
+                case SECP256K1 -> Bc.secp256k1(ops -> ops.privateKeyFromPkcs8(der));
             };
         } catch (MultikeyException e) {
             throw e;

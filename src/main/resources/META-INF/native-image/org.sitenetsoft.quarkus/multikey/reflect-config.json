@@ -1,0 +1,6 @@
+[
+  {
+    "name": "org.sitenetsoft.multikey.Secp256k1",
+    "methods": [ { "name": "<init>", "parameterTypes": [] } ]
+  }
+]
