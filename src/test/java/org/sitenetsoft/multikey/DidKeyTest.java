@@ -64,6 +64,15 @@ class DidKeyTest {
     }
 
     @Test
+    void rejectsUnsupportedCurve() throws Exception {
+        KeyPairGenerator g = KeyPairGenerator.getInstance("EC");
+        g.initialize(new ECGenParameterSpec("secp384r1"));
+        PublicKey p384 = g.generateKeyPair().getPublic();
+        MultikeyException e = assertThrows(MultikeyException.class, () -> Multikey.of(p384));
+        assertTrue(e.getMessage().contains("Unsupported curve"));
+    }
+
+    @Test
     void secp256k1ToPublicKeyWorksWithBouncyCastle() throws Exception {
         PublicKey pub = DidKey.parse(Vectors.k256Did()).toPublicKey();
         assertEquals("EC", pub.getAlgorithm());

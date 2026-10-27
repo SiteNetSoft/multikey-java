@@ -81,7 +81,11 @@ public record Multikey(KeyType type, byte[] publicKeyBytes) {
     public static Multikey of(PublicKey key) {
         String alg = key.getAlgorithm();
         if (key instanceof ECPublicKey ec) {
-            KeyType type = ec.getParams().getCurve().getA().signum() == 0 ? KeyType.SECP256K1 : KeyType.P256;
+            KeyType type = ec.getParams().getCurve().getField() instanceof java.security.spec.ECFieldFp fp
+                    ? EcPoints.curveOfPrime(fp.getP()) : null;
+            if (type == null) {
+                throw new MultikeyException("Unsupported curve");
+            }
             return new Multikey(type, EcPoints.compress(type, ec.getW().getAffineX(), ec.getW().getAffineY()));
         }
         if ("Ed25519".equalsIgnoreCase(alg) || "EdDSA".equalsIgnoreCase(alg)) {

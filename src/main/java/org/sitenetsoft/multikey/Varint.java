@@ -25,10 +25,13 @@ public final class Varint {
     public static int[] decode(byte[] in) {
         int value = 0;
         for (int i = 0; i < in.length && i < 5; i++) {
+            if (i == 4 && (in[i] & 0xF8) != 0) {
+                throw new MultikeyException("Varint does not fit in an int");
+            }
             value |= (in[i] & 0x7F) << (7 * i);
             if ((in[i] & 0x80) == 0) {
-                if (value < 0) {
-                    throw new MultikeyException("Varint too large");
+                if (i > 0 && in[i] == 0) {
+                    throw new MultikeyException("Non-minimal varint");
                 }
                 return new int[] {value, i + 1};
             }

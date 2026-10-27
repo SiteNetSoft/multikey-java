@@ -24,6 +24,14 @@ public final class EcPoints {
         };
     }
 
+    /** Identifies a supported curve by its field prime, or null when unsupported. */
+    static KeyType curveOfPrime(BigInteger prime) {
+        if (P256_P.equals(prime)) {
+            return KeyType.P256;
+        }
+        return K256_P.equals(prime) ? KeyType.SECP256K1 : null;
+    }
+
     private static BigInteger a(KeyType c) {
         return c == KeyType.P256 ? P256_A : BigInteger.ZERO;
     }

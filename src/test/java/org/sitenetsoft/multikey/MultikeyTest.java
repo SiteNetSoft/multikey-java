@@ -47,6 +47,30 @@ class MultikeyTest {
     }
 
     @Test
+    void varintRejectsMalformed() {
+        assertThrows(MultikeyException.class, () -> Varint.decode(new byte[] {(byte) 0xE7, (byte) 0x81, 0x00}));
+        assertThrows(MultikeyException.class,
+                () -> Varint.decode(new byte[] {(byte) 0xE7, (byte) 0x81, (byte) 0x80, (byte) 0x80, 0x70}));
+        assertThrows(MultikeyException.class, () -> Varint.decode(new byte[] {(byte) 0x80}));
+        assertThrows(MultikeyException.class, () -> Varint.decode(new byte[0]));
+    }
+
+    @Test
+    void rejectsOverlongCodecPrefix() {
+        byte[] raw = new byte[3 + 33];
+        raw[0] = (byte) 0xE7;
+        raw[1] = (byte) 0x81;
+        raw[2] = 0x00;
+        raw[3] = 2;
+        assertThrows(MultikeyException.class, () -> Multikey.parse(Multibase.encodeBase58btc(raw)));
+    }
+
+    @Test
+    void multibaseRejectsPaddedBase64url() {
+        assertThrows(MultikeyException.class, () -> Multibase.decode("uAQID-w=="));
+    }
+
+    @Test
     void multibaseDecodesBase64url() {
         assertArrayEquals(new byte[] {1, 2, 3, (byte) 0xfb}, Multibase.decode("uAQID-w"));
     }

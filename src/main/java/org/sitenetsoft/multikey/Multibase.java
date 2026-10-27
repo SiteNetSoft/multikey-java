@@ -20,6 +20,9 @@ public final class Multibase {
             case 'z':
                 return Base58.decode(body);
             case 'u':
+                if (body.indexOf('=') >= 0) {
+                    throw new MultikeyException("Multibase base64url must be unpadded");
+                }
                 try {
                     return Base64.getUrlDecoder().decode(body);
                 } catch (IllegalArgumentException e) {
