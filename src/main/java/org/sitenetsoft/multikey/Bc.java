@@ -6,6 +6,8 @@ package org.sitenetsoft.multikey;
  * requested, and native images build without it (the operation then fails at runtime with {@link #MISSING}).
  */
 final class Bc {
+    /** Names the {@link Secp256k1Ops} implementation; read at runtime so native images never link it. */
+    static final String IMPL_PROPERTY = "org.sitenetsoft.multikey.secp256k1-impl";
     static final String MISSING = "secp256k1 needs org.bouncycastle:bcprov-jdk18on on the classpath";
 
     interface Call<T> {
@@ -34,7 +36,10 @@ final class Bc {
         Secp256k1Ops o = ops;
         if (o == null) {
             try {
-                o = (Secp256k1Ops) Class.forName("org.sitenetsoft.multikey.Secp256k1")
+                // Not a constant: native-image would otherwise pull Secp256k1 into the image and fail to
+                // initialise it when BouncyCastle is absent. Native images therefore have no secp256k1 support.
+                String impl = System.getProperty(IMPL_PROPERTY, "org.sitenetsoft.multikey.Secp256k1");
+                o = (Secp256k1Ops) Class.forName(impl, true, Bc.class.getClassLoader())
                         .getDeclaredConstructor().newInstance();
             } catch (ClassNotFoundException | NoClassDefFoundError e) {
                 throw new MultikeyException(MISSING, e);
